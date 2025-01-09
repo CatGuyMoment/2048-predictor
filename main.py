@@ -78,7 +78,7 @@ class tile:
         self.update_availability()
 
     def raycast(self):#gonna hardcode this to only work in +x and +y cuz thats how its done officially for some reason??
-        pass
+        pass #returns a CELL.
 
 
 
@@ -97,12 +97,12 @@ def run(grid,rv_list ): ##rv_list: first 3 reserved for raycasts and random cell
         raycast_x, raycast_y = check_cell.raycast()
 
         if raycast_x and check_cell.value < value and rv_list[1] < 0.8:
-            position[0] = raycast_x
-            position[1] = check_cell.position[1]
+            position = check_cell.position.copy()
+            value = raycast_x.value
         
         if raycast_y and check_cell.value < value and rv_list[2] < 0.8:
-            position[0] = check_cell.position[0]
-            position[1] = raycast_y
+            position = check_cell.position.copy()
+            value = raycast_y.value
     
 
 def assemble_list(size,values,dimensions):
