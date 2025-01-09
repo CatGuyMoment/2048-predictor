@@ -42,8 +42,11 @@ MAX_NUMBER = 29
 
 class grid:
     def __init__(self,size):
-        self.lines_yx = [line() for _ in range(size)]
-        self.lines_xy = [line() for _ in range(size)]
+        self.lines_yx = [line(self) for _ in range(size)]
+        self.lines_xy = [line(self) for _ in range(size)]
+
+        self.size = size
+
         for x in range(size):
             for y in range(size):
                 line_x = self.lines_yx[y]
@@ -59,16 +62,23 @@ class grid:
         pass
 
 class line:
-    def __init__(self):
+    def __init__(self,parent):
         self.tiles = []
+        self.parent = parent
+        self.size = self.parent.size
+
     def append_tile(self,new_tile):
         self.tiles.append(new_tile)
 
+    def clear_caches(self):
+        for tile in self.tiles:
+            tile.raycast_cache = []
 class tile:
     def __init__(self,line_x,line_y,pos_x,pos_y):
         self.value = 1 #1 = available
         self.parents = [line_x,line_y]
         self.position = [pos_x,pos_y]
+        self.raycast_cache = []
 
     def update_availability(self):
         self.available = self.value == 1
@@ -77,9 +87,32 @@ class tile:
         self.value = newvalue
         self.update_availability()
 
-    def raycast(self):#gonna hardcode this to only work in +x and +y cuz thats how its done officially for some reason??
-        pass #returns a CELL.
+        self.parents[0].clear_caches()
+        self.parents[1].clear_caches()
 
+    def raycast(self):#gonna hardcode this to only work in +x and +y cuz thats how its done officially for some reason??
+        if len(self.raycast_cache) != 0:
+            return self.raycast_cache[0], self.raycast_cache[1]
+        
+        grid_x = self.parents[0]
+        cell_x = None
+        for x in range(self.position+1,grid_x.size):
+            cell = grid_x.tiles[x]
+            if not cell.available:
+                cell_x = cell
+                break
+
+        grid_y = self.parents[1]
+        cell_y = None
+        for y in range(self.position+1,grid_y.size):
+            cell = grid_y.tiles[y]
+            if not cell.available:
+                cell_y = cell
+                break
+
+        self.raycast_cache = [cell_x,cell_y]
+        
+        return cell_x,cell_y
 
 
 
@@ -103,7 +136,7 @@ def run(grid,rv_list ): ##rv_list: first 3 reserved for raycasts and random cell
         if raycast_y and check_cell.value < value and rv_list[2] < 0.8:
             position = check_cell.position.copy()
             value = raycast_y.value
-    
+    return position,value
 
 def assemble_list(size,values,dimensions):
     if dimensions == 0:
