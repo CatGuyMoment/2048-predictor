@@ -40,27 +40,70 @@ from itertools import permutations
         #p(previous) = 100%
 MAX_NUMBER = 29
 
-def get_random_available_cell(randomness_value):
-    pass
+class grid:
+    def __init__(self,size):
+        self.lines_yx = [line() for _ in range(size)]
+        self.lines_xy = [line() for _ in range(size)]
+        for x in range(size):
+            for y in range(size):
+                line_x = self.lines_yx[y]
+                line_y = self.lines_xy[x]
+                new_tile = tile(line_x,line_y,x,y)
 
-def raycast():
-    pass
+                line_x.append_tile(new_tile)
+                line_y.append_tile(new_tile)
+
+    def get_available_cells(self):
+        pass
+    def get_random_available_cell(self):
+        pass
+
+class line:
+    def __init__(self):
+        self.tiles = []
+    def append_tile(self,new_tile):
+        self.tiles.append(new_tile)
+
+class tile:
+    def __init__(self,line_x,line_y,pos_x,pos_y):
+        self.value = 1 #1 = available
+        self.parents = [line_x,line_y]
+        self.position = [pos_x,pos_y]
+
+    def update_availability(self):
+        self.available = self.value == 1
+
+    def update_value(self,newvalue):
+        self.value = newvalue
+        self.update_availability()
+
+    def raycast(self):#gonna hardcode this to only work in +x and +y cuz thats how its done officially for some reason??
+        pass
 
 
 
-def run(rv_list ): ##rv_list: first 3 reserved for raycasts and random cells, all others reserved for check_cell
-    max = MAX_NUMBER
-    backup_cell = get_random_available_cell(rv_list[0])
+
+
+
+def run(grid,rv_list ): ##rv_list: first 3 reserved for raycasts and random cells, all others reserved for check_cell
+    backup_cell = grid.get_random_available_cell(rv_list[0])
+
+    value = MAX_NUMBER
+    position = backup_cell.position.copy() #avoids reference nonesense
+
     for index in range(8):
-        check_cell = get_random_available_cell(rv_list[index+3])
+        check_cell = grid.get_random_available_cell(rv_list[index+3])
 
-        raycast_x, raycast_y = raycast()
+        raycast_x, raycast_y = check_cell.raycast()
 
-        if raycast_x and raycast_x < max and rv_list[1] < 0.8:
-            max = raycast_x
+        if raycast_x and check_cell.value < value and rv_list[1] < 0.8:
+            position[0] = raycast_x
+            position[1] = check_cell.position[1]
         
-        if raycast_y and raycast_y < max and rv_list[2] < 0.8:
-            max = raycast_y
+        if raycast_y and check_cell.value < value and rv_list[2] < 0.8:
+            position[0] = check_cell.position[0]
+            position[1] = raycast_y
+    
 
 def assemble_list(size,values,dimensions):
     if dimensions == 0:
@@ -94,5 +137,5 @@ def main(rv_decimal_places):
     print(len(results))
 
 
-run(3)    
+run(grid(3) 3)    
 
