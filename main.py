@@ -68,31 +68,31 @@ def assemble_list(size,values,dimensions):
     return [assemble_list(size,values,dimensions-1) for _ in range(size)]
 
 def get_linspace_size(decimal_places):
-    return decimal_places + 1
+    return 10**decimal_places + 1
 
 def create_linspace(linspace_size):
     return np.linspace(0,1,linspace_size)
 
-class random_state:
-    def __init__(self,rv_list_size,rv_decimal_places):
-        
-        linspace_size = get_linspace_size(rv_decimal_places)
+def main(rv_decimal_places):
+    rv_list_size = 8
+    linspace_size = get_linspace_size(rv_decimal_places)
+    linspace = create_linspace(linspace_size)
 
-        linspace = create_linspace(linspace_size)
+    state_i = [0 for _ in range(rv_list_size)]
+    state_v = [0 for _ in range(rv_list_size)]
 
-        state_i = [0 for _ in range(rv_list_size)]
-        state_v = [0 for _ in range(rv_list_size)]
-        while state_i[-1] < rv_decimal_places:
-            state_i[0] += 1
-            for index in range(rv_list_size):
-                if state_i[index] >= rv_decimal_places and index < rv_list_size - 1:
-                    state_i[index] = 0
-                    state_i[index+1] += 1
-                state_v = linspace[state_i]
-        result = run(state_v)
-        print(result)
+    results = []
+    while state_i[-1] < rv_decimal_places:
+        state_i[0] += 1
+        for index in range(rv_list_size):
+            if state_i[index] >= rv_decimal_places and index < rv_list_size - 1:
+                state_i[index] = 0
+                state_i[index+1] += 1
+            state_v = linspace[state_i]
+            results.append(state_v)
+            # print(state_v)
+    print(len(results))
 
 
-
-random_state(8,10)    
+run(3)    
 
