@@ -69,7 +69,7 @@ class grid:
             for tile in range(line.tiles):
                 if tile.available:
                     cells.append(tile)
-                    
+
         self.available_cells = cells
         return cells
 
@@ -186,5 +186,5 @@ def main(rv_decimal_places):
     print(len(results))
 
 
-run(grid(3) 3)    
+run(grid(3), 3)    
 
