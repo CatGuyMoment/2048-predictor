@@ -44,8 +44,11 @@ class grid:
     def __init__(self,size):
         self.lines_yx = [line(self) for _ in range(size)]
         self.lines_xy = [line(self) for _ in range(size)]
-
+        
         self.size = size
+
+        self.available_cells = []
+        self.available_cells_cached = False
 
         for x in range(size):
             for y in range(size):
@@ -57,9 +60,22 @@ class grid:
                 line_y.append_tile(new_tile)
 
     def get_available_cells(self):
-        pass
-    def get_random_available_cell(self):
-        pass
+        if self.available_cells_cached:
+            return self.available_cells
+        self.available_cells_cached = True
+
+        cells = []
+        for line in range(self.lines_xy):
+            for tile in range(line.tiles):
+                if tile.available:
+                    cells.append(tile)
+                    
+        self.available_cells = cells
+        return cells
+
+    def get_random_available_cell(self,random_value):
+        cells = self.get_available_cells()
+        return cells[math.floor(random_value * len(cells))]
 
 class line:
     def __init__(self,parent):
@@ -111,7 +127,7 @@ class tile:
                 break
 
         self.raycast_cache = [cell_x,cell_y]
-        
+
         return cell_x,cell_y
 
 
