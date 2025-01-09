@@ -1,0 +1,98 @@
+import math
+import numpy as np
+from itertools import permutations 
+#prediction 101:
+
+#every move, this runs 8 times:
+
+    #select a random available square
+
+    #raycast on the x axis to the left
+        #when something is found, it has an 80% chance of being picked AND it's smaller than something already raycasted, otherwise it's discarded
+
+    #raycast on the y axis up
+        #when something is found, it has an 80% chance of being picked AND it's smaller than something already raycasted, otherwise it's discarded
+
+
+#probabilities for 1 run on 1 random square (which has to iterate 8 times)
+    #for raycast x and raycast y:
+
+    #if x = y or x < y, 
+        #p(x) = 16.59%
+        #p(y) = 79%
+        #p(previous_selection) = 4.41%
+
+    #if x > y, 
+        #p(x) = 16.59%
+        #p(y) = 79%
+        #p(previous_selection) = 4.41%
+
+    #if one of the raycasts fails
+
+        #if previous_selection = successful_raycast or previous selection < successful raycast,
+            #p(previous) = 100%
+
+        #if previous_selection > successful_raycast,
+            #p(successful) = 79%
+            #p(previous) = 21%
+
+    #if both raycasts fail,
+        #p(previous) = 100%
+MAX_NUMBER = 29
+
+def get_random_available_cell(randomness_value):
+    pass
+
+def raycast():
+    pass
+
+
+
+def run(rv_list ): ##rv_list: first 3 reserved for raycasts and random cells, all others reserved for check_cell
+    max = MAX_NUMBER
+    backup_cell = get_random_available_cell(rv_list[0])
+    for index in range(8):
+        check_cell = get_random_available_cell(rv_list[index+3])
+
+        raycast_x, raycast_y = raycast()
+
+        if raycast_x and raycast_x < max and rv_list[1] < 0.8:
+            max = raycast_x
+        
+        if raycast_y and raycast_y < max and rv_list[2] < 0.8:
+            max = raycast_y
+
+def assemble_list(size,values,dimensions):
+    if dimensions == 0:
+        return values
+    return [assemble_list(size,values,dimensions-1) for _ in range(size)]
+
+def get_linspace_size(decimal_places):
+    return decimal_places + 1
+
+def create_linspace(linspace_size):
+    return np.linspace(0,1,linspace_size)
+
+class random_state:
+    def __init__(self,rv_list_size,rv_decimal_places):
+        
+        linspace_size = get_linspace_size(rv_decimal_places)
+
+        linspace = create_linspace(linspace_size)
+
+        state_i = [0 for _ in range(rv_list_size)]
+        state_v = [0 for _ in range(rv_list_size)]
+        while state_i[-1] < rv_decimal_places:
+            state_i[0] += 1
+            for index in range(rv_list_size):
+                if state_i[index] >= rv_decimal_places and index < rv_list_size - 1:
+                    state_i[index] = 0
+                    state_i[index+1] += 1
+                state_v = linspace[state_i]
+        result = run(state_v)
+        print(result)
+
+
+
+random_state(8,10)    
+
